@@ -1,52 +1,35 @@
-{
-    "icons", [
-      {
-        "src": "./icons/icon-512x512.png",
-        "sizes": "512x512",
-        "type": "image/png"
-      },
-      {
-        "src": "./icons/icon-384x384.png",
-        "sizes": "384x384",
-        "type": "image/png"
-      },
-      {
-        "src": "./icons/icon-192x192.png",
-        "sizes": "192x192",
-        "type": "image/png"
-      },
-      {
-        "src": "./icons/icon-152x152.png",
-        "sizes": "152x152",
-        "type": "image/png"
-      },
-      {
-        "src": "./icons/icon-144x144.png",
-        "sizes": "144x144",
-        "type": "image/png"
-      },
-      {
-        "src": "./icons/icon-128x128.png",
-        "sizes": "128x128",
-        "type": "image/png"
-      },
-      {
-        "src": "./icons/icon-96x96.png",
-        "sizes": "96x96",
-        "type": "image/png"
-      },
-      {
-        "src": "./icons/icon-72x72.png",
-        "sizes": "72x72",
-        "type": "image/png"
-      }
-    ],
-    "name", "Budget Tracker",
-    "short_name", "Budget",
-    "orientation", "portrait",
-    "display", "standalone",
-    "start_url", "../index.html",
-    "description", "An app that allows you to view, track, and update your budgets.",
-    "background_color", "#01579b",
-    "theme_color", "#ffffff"
-  }
+const resources = [
+    "./index.html",
+    "./css/styles.css",
+    "./js/idb.js",
+    "./js/index.js",
+  ];
+  
+  const APP_PREFIX = "BudgetTracker-";
+  const VERSION = "v_1.0";
+  const CACHE_NAME = APP_PREFIX + VERSION;
+  
+  
+  self.addEventListener("install", (event) => {
+    event.waitUntil(
+      caches.open(CACHE_NAME).then((cache) => {
+          console.log(cache);
+          return cache.addAll(resources);
+      })
+    );
+  });
+  
+  self.addEventListener('fetch', (event) => {
+      console.log("fetch request : " + event.request.url);
+      event.respondWith(
+          caches.match(event.request).then((request) => {
+              if (request) {
+                  console.log(`Responding with ${event.request.url} cache`)
+                  return request
+              } else {
+                  console.log(`No cached resource found, fetching ${event.request.url}`)
+                  return fetch(event.request)
+              }
+          })
+      )
+  })
